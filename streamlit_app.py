@@ -13,7 +13,7 @@ streamlit.text('🥑Avocado Toast')
 
 streamlit.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
 
-#kk import pandas
+# import pandas
 my_fruit_list = pandas.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt")
 my_fruit_list = my_fruit_list.set_index('Fruit')
 
@@ -24,6 +24,12 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 # Display the table on the page.
 streamlit.dataframe(fruits_to_show)
 
+# Create a repeatable code block called a function
+def get_fruityvice_data(this_fruit_choice)
+  fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + this_fruit_choice)
+  fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+return fruityvice_normalized
+    
 # New section to display fruityvice api response.
 streamlit.header("Fruityvice Fruit Advice!")
 try:
@@ -31,16 +37,16 @@ try:
   if not fruit_choice:
     streamlit.error("Please select a fruit to get information,")
   else:
-    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-    fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-    streamlit.dataframe(fruityvice_normalized)
+    back_from_function get_fruityvice_data(fruit_choice)
+    streamlit.dataframe(back_from_function)
+
 except URLError as e:
   streamlit.error()
   
 # don't run anything pass here while we troubleshoot
 streamlit.stop()
 
-#kk import snowflake.connector
+# import snowflake.connector
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 my_cur = my_cnx.cursor()
 my_cur.execute("select * from pc_rivery_db.public.fruit_load_list")
@@ -53,5 +59,5 @@ streamlit.header("Add New Fruit To The List!")
 add_my_fruit = streamlit.text_input('What new fruit would you like to add?','jackfruit')
 streamlit.write('Thank you for adding ', add_my_fruit)
 
-#This will not work correctly, but just go with it for now
+# This will not work correctly, but just go with it for now
 my_cur.execute("insert into pc_rivery_db.public.fruit_load_list values ('from streamlit')")
